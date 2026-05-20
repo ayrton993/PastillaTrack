@@ -819,6 +819,8 @@ async function toggleNotif(){
           updateNotifToggleUI(true);
           showNotifStatusMsg('¡Listo! Te avisaremos a las ' + cfg.time + ' ✅', '#1a9e76');
           updateNotifBanner();
+          // Notif de prueba
+          try { window.AndroidBridge.testNotification(cfg.pillName || 'tu pastilla', cfg.notes || ''); } catch(e){}
         } catch(e) {
           showNotifStatusMsg('Error al activar alarma: ' + e.message, '#E24B4A');
         }
@@ -924,8 +926,16 @@ function fireNotification(){
 }
 
 function initNotifState(){
-  // Cargar estado guardado
-  notifEnabled = !!(cfg.notifEnabled && notifSupported() && Notification.permission === 'granted');
+  if (window.AndroidBridge) {
+    try {
+      notifEnabled = !!(cfg.notifEnabled && window.AndroidBridge.isAlarmEnabled());
+    } catch(e) { notifEnabled = cfg.notifEnabled || false; }
+    updateNotifToggleUI(notifEnabled);
+    const banner = document.getElementById("notif-banner");
+    if (banner) banner.style.display = notifEnabled ? "none" : "flex";
+    return;
+  }
+  notifEnabled = !!(cfg.notifEnabled && notifSupported() && Notification.permission === "granted");
   updateNotifToggleUI(notifEnabled);
   updateNotifBanner();
   if(notifEnabled) startAlarmChecker();
