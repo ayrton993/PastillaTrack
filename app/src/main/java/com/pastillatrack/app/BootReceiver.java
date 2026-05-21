@@ -8,54 +8,64 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 public class BootReceiver extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) return;
+        String action = intent.getAction();
 
-        SharedPreferences prefs = context.getSharedPreferences(
-            MainActivity.PREFS, Context.MODE_PRIVATE
-        );
+        // Reprogramar desde AlarmReceiver después de dispararse
+        if ("com.pastillatrack.RESCHEDULE".equals(action)) {
+            int hour      = intent.getIntExtra("hour", -1);
+            int min       = intent.getIntExtra("min",  -1);
+            String pill   = intent.getStringExtra("pill_name");
+            String notes  = intent.getStringExtra("notes");
+            if (hour >= 0 && min >= 0) {
+                scheduleNext(context, hour, min, pill, notes);
+            }
+            return;
+        }
 
-        boolean enabled = prefs.getBoolean("alarm_enabled", false);
-        String timeStr = prefs.getString("alarm_time", "");
-        String pillName = prefs.getString("pill_name", "tu pastilla");
-        String notes = prefs.getString("notes", "");
+        // Reprogramar al reiniciar el teléfono
+        if (!Intent.ACTION_BOOT_COMPLETED.equals(action)) return;
 
-        if (!enabled || timeStr.isEmpty()) return;
+        SharedPreferences p = context.getSharedPreferences(
+            MainActivity.PREFS, Context.MODE_PRIVATE);
+        if (!p.getBoolean("alarm_enabled", false)) return;
+
+        String timeStr = p.getString("alarm_time", "");
+        if (timeStr.isEmpty()) return;
 
         try {
             String[] parts = timeStr.split(":");
             int hour = Integer.parseInt(parts[0]);
-            int minute = Integer.parseInt(parts[1]);
+            int min  = Integer.parseInt(parts[1]);
+            scheduleNext(context, hour, min,
+                p.getString("pill_name", "tu pastilla"),
+                p.getString("notes", ""));
+        } catch (Exception e) { e.printStackTrace(); }
+    }
 
-            java.util.Calendar cal = java.util.Calendar.getInstance();
-            cal.set(java.util.Calendar.HOUR_OF_DAY, hour);
-            cal.set(java.util.Calendar.MINUTE, minute);
-            cal.set(java.util.Calendar.SECOND, 0);
-            cal.set(java.util.Calendar.MILLISECOND, 0);
+    private void scheduleNext(Context ctx, int hour, int min,
+                               String pillName, String notes) {
+        AlarmManager am = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
+        if (am == null) return;
 
-            if (cal.getTimeInMillis() <= System.currentTimeMillis()) {
-                cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
-            }
+        Intent intent = new Intent(ctx, AlarmReceiver.class);
+        intent.putExtra("pill_name", pillName);
+        intent.putExtra("notes",     notes);
+        PendingIntent pi = PendingIntent.getBroadcast(ctx, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            Intent alarmIntent = new Intent(context, AlarmReceiver.class);
-            alarmIntent.putExtra("pill_name", pillName);
-            alarmIntent.putExtra("notes", notes);
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.HOUR_OF_DAY, hour);
+        cal.set(java.util.Calendar.MINUTE,      min);
+        cal.set(java.util.Calendar.SECOND,      0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        // Siempre programar para mañana (ya sonó hoy)
+        cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
 
-            PendingIntent pi = PendingIntent.getBroadcast(
-                context, 0, alarmIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-            );
-
-            am.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                cal.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY,
-                pi
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        AlarmManager.AlarmClockInfo info =
+            new AlarmManager.AlarmClockInfo(cal.getTimeInMillis(), pi);
+        am.setAlarmClock(info, pi);
     }
 }
