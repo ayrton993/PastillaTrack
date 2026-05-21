@@ -4,111 +4,108 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#2DD4A0">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>PastillaTrack</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --green:#2DD4A0;--green-dark:#1a9e76;--green-bg:#f0fdf8;
-  --blue:#4FA8FF;--blue-bg:#f0f7ff;
-  --surface:#ffffff;--bg:#F7F8FC;--border:#E8EAF0;
+  --blue:#4FA8FF;--blue-bg:#f0f7ff;--red:#FF5A5A;--red-bg:#FFF0F0;
+  --surface:#fff;--bg:#F7F8FC;--border:#E8EAF0;
   --text:#1a1d2e;--muted:#8892A4;--light:#B8C0CC;
   --r:20px;--rs:12px;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:430px;margin:0 auto;height:100vh;background:var(--bg);position:relative;overflow:hidden}
 
-.app{max-width:430px;margin:0 auto;height:100vh;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
-
-/* ===== SCREEN SYSTEM ===== */
-.screen{position:absolute;inset:0;background:var(--bg);transition:transform 0.35s cubic-bezier(.4,0,.2,1),opacity 0.35s;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* SCREENS */
+.screen{position:absolute;inset:0;background:var(--bg);transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
 .screen.out{transform:translateX(-100%);opacity:0;pointer-events:none}
 
-/* ===== ONBOARDING ===== */
-.ob-wrap{padding:2rem 1.5rem 2rem;display:flex;flex-direction:column;min-height:100%;gap:0}
+/* ONBOARDING */
+.ob-wrap{padding:2rem 1.5rem 2rem;display:flex;flex-direction:column;min-height:100%}
 .ob-hero{text-align:center;margin-bottom:1.5rem}
-.ob-emoji{font-size:72px;display:block;margin-bottom:0.75rem;animation:float-in 0.6s cubic-bezier(.34,1.56,.64,1)}
+.ob-emoji{font-size:72px;display:block;margin-bottom:.75rem;animation:float-in .6s cubic-bezier(.34,1.56,.64,1)}
 .ob-title{font-size:26px;font-weight:900;color:var(--text);line-height:1.2}
 .ob-sub{font-size:14px;color:var(--muted);font-weight:600;margin-top:8px;line-height:1.5}
-
 .step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:1.5rem}
-.sdot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all 0.3s}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s}
 .sdot.on{width:24px;border-radius:4px;background:var(--green)}
-
 .ob-step{display:none;flex-direction:column;gap:1rem;flex:1}
 .ob-step.active{display:flex}
-.ob-label{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase}
-.ob-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:inherit;font-weight:700;color:var(--text);background:var(--surface);outline:none;transition:border-color 0.2s;-webkit-appearance:none}
+.ob-label{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.ob-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:var(--rs);font-size:16px;font-family:inherit;font-weight:700;color:var(--text);background:var(--surface);outline:none;transition:border-color .2s;-webkit-appearance:none}
 .ob-input:focus{border-color:var(--green)}
 .ob-input::placeholder{color:var(--light);font-weight:600}
-
 .pill-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.pill-opt{padding:12px;border:2px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;transition:all 0.15s;background:var(--surface);-webkit-tap-highlight-color:transparent}
-.pill-opt:active{transform:scale(0.96)}
+.pill-opt{padding:12px;border:2px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;transition:all .15s;background:var(--surface);-webkit-tap-highlight-color:transparent}
+.pill-opt:active{transform:scale(.96)}
 .pill-opt.sel{border-color:var(--green);background:var(--green-bg)}
 .pill-opt-icon{font-size:24px;display:block;margin-bottom:4px}
 .pill-opt-name{font-size:12px;font-weight:800;color:var(--text)}
-
-.time-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:var(--rs);font-size:20px;font-family:inherit;font-weight:800;color:var(--text);background:var(--surface);outline:none;text-align:center;transition:border-color 0.2s;-webkit-appearance:none}
+.time-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:var(--rs);font-size:20px;font-family:inherit;font-weight:800;color:var(--text);background:var(--surface);outline:none;text-align:center;transition:border-color .2s;-webkit-appearance:none}
 .time-input:focus{border-color:var(--blue)}
-
-.ob-next{width:100%;padding:16px;border-radius:var(--rs);border:none;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--green);color:#fff;margin-top:auto;transition:transform 0.1s,opacity 0.2s;-webkit-appearance:none}
-.ob-next:active{transform:scale(0.97)}
-.ob-next:disabled{opacity:0.4;cursor:not-allowed}
+.ob-next{width:100%;padding:16px;border-radius:var(--rs);border:none;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--green);color:#fff;margin-top:auto;-webkit-appearance:none}
+.ob-next:active{transform:scale(.97)}
 .ob-back{background:none;border:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;padding:10px 0;text-align:center;font-family:inherit}
 
-/* ===== MAIN APP ===== */
-.top-bar{padding:1rem 1.25rem 0.75rem;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+/* MAIN */
+.top-bar{padding:1rem 1.25rem .75rem;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
 .top-row{display:flex;justify-content:space-between;align-items:center}
 .user-row{display:flex;align-items:center;gap:10px}
 .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--blue));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0}
 .user-name{font-size:15px;font-weight:800;color:var(--text)}
 .user-sub{font-size:11px;color:var(--muted);font-weight:600}
+.top-btns{display:flex;gap:8px;align-items:center}
 .streak-chip{display:flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FF6B35,#FF8C42);padding:7px 13px;border-radius:20px;cursor:pointer}
 .streak-chip span{font-size:11px;color:#fff;font-weight:800}
+.pills-btn{width:36px;height:36px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
 
-.pill-banner{margin:0.75rem 0 0;background:#EFF6FF;border-radius:var(--rs);padding:11px 14px;display:flex;align-items:center;gap:12px;border:1px solid #C7D7F5}
-.pill-banner-icon{font-size:26px;line-height:1}
-.pbi-name{font-size:14px;font-weight:800;color:#1e3a5f}
-.pbi-time{font-size:12px;font-weight:600;color:#3B82F6}
+/* PILLS LIST en top bar */
+.pills-scroll{display:flex;gap:8px;overflow-x:auto;padding:.75rem 0 0;scrollbar-width:none}
+.pills-scroll::-webkit-scrollbar{display:none}
+.pill-chip{flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:20px;padding:6px 12px;cursor:pointer;transition:all .15s}
+.pill-chip.active{background:var(--green-bg);border-color:var(--green)}
+.pill-chip-icon{font-size:16px}
+.pill-chip-name{font-size:12px;font-weight:800;color:var(--text)}
+.pill-chip-time{font-size:10px;font-weight:600;color:var(--muted)}
+.pill-chip-done{font-size:10px;color:var(--green);font-weight:800}
+.add-pill-chip{flex-shrink:0;display:flex;align-items:center;gap:6px;background:var(--green-bg);border:1.5px dashed var(--green);border-radius:20px;padding:6px 14px;cursor:pointer}
+.add-pill-chip span{font-size:13px;font-weight:800;color:var(--green-dark)}
 
-.stats-row{display:flex;gap:8px;padding:0.75rem 1.25rem;flex-shrink:0}
+.stats-row{display:flex;gap:8px;padding:.75rem 1.25rem;flex-shrink:0}
 .stat{flex:1;text-align:center;padding:10px 6px;background:var(--surface);border-radius:var(--rs);border:1px solid var(--border)}
 .stat-n{font-size:22px;font-weight:900;color:var(--text)}
-.stat-l{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:0.04em;text-transform:uppercase;margin-top:2px}
+.stat-l{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
 
 .tabs-wrap{padding:0 1.25rem;flex-shrink:0}
 .tabs{display:flex;background:var(--surface);border-radius:var(--r);padding:5px;gap:4px;border:1px solid var(--border)}
-.tab{flex:1;padding:10px 6px;border:none;border-radius:15px;font-size:13px;font-weight:800;cursor:pointer;background:transparent;color:var(--muted);transition:all 0.2s;font-family:inherit}
+.tab{flex:1;padding:10px 6px;border:none;border-radius:15px;font-size:13px;font-weight:800;cursor:pointer;background:transparent;color:var(--muted);transition:all .2s;font-family:inherit}
 .tab.on{background:var(--green);color:#fff}
-
 .scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .panel{padding:1rem 1.25rem 2rem}
 
 /* DRAG */
 .drag-card{border-radius:var(--r);background:var(--surface);border:1px solid var(--border);overflow:hidden}
-.drag-scene{position:relative;height:300px;background:linear-gradient(180deg,#DBEAFE 0%,#EFF6FF 50%,#D1FAE5 50%,#A7F3D0 100%);overflow:hidden;touch-action:none;user-select:none}
-.cloud{position:absolute;font-size:26px;opacity:0.7;animation:drift 7s ease-in-out infinite;pointer-events:none}
+.drag-scene{position:relative;height:280px;background:linear-gradient(180deg,#DBEAFE 0%,#EFF6FF 50%,#D1FAE5 50%,#A7F3D0 100%);overflow:hidden;touch-action:none;user-select:none}
+.cloud{position:absolute;font-size:26px;opacity:.7;animation:drift 7s ease-in-out infinite;pointer-events:none}
 .hill1{position:absolute;bottom:0;left:-10%;width:65%;height:70px;background:#34D399;border-radius:50% 60% 0 0}
 .hill2{position:absolute;bottom:0;right:-10%;width:55%;height:55px;background:#6EE7B7;border-radius:60% 50% 0 0}
 .ground{position:absolute;bottom:0;left:0;right:0;height:38px;background:#10B981}
 .pill-drag{position:absolute;top:44px;left:50%;transform:translateX(-50%);font-size:54px;cursor:grab;touch-action:none;z-index:20;line-height:1;user-select:none}
 .pill-drag.floating{animation:float-pill 2.2s ease-in-out infinite}
 .monster-wrap{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
-.monster-body{font-size:66px;line-height:1;transition:transform 0.15s}
+.monster-body{font-size:66px;line-height:1;transition:transform .15s}
 .monster-tag{font-size:11px;font-weight:800;color:#065F46;background:#A7F3D0;padding:3px 10px;border-radius:10px;margin-top:2px;white-space:nowrap}
 .drag-hint{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
-.hint-bubble{font-size:12px;font-weight:800;color:#064E3B;background:rgba(167,243,208,0.85);padding:6px 14px;border-radius:10px;margin-bottom:4px;white-space:nowrap}
+.hint-bubble{font-size:12px;font-weight:800;color:#064E3B;background:rgba(167,243,208,.85);padding:6px 14px;border-radius:10px;margin-bottom:4px;white-space:nowrap}
 .hint-arrow{font-size:22px;color:#059669;animation:hint-bounce 1.4s ease-in-out infinite}
 .done-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;pointer-events:none;z-index:30}
-.burst{font-size:72px;animation:burst-in 0.5s cubic-bezier(.34,1.56,.64,1)}
+.burst{font-size:72px;animation:burst-in .5s cubic-bezier(.34,1.56,.64,1)}
 .burst-text{font-size:14px;font-weight:900;color:#065F46;background:#A7F3D0;padding:6px 18px;border-radius:12px}
-.drag-footer{padding:0.75rem 1.25rem;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)}
+.drag-footer{padding:.75rem 1.25rem;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)}
 .d-dot{width:10px;height:10px;border-radius:50%;background:#E5E7EB;flex-shrink:0}
 .d-dot.ok{background:var(--green)}
 .d-status{font-size:13px;font-weight:700;color:var(--muted)}
@@ -121,18 +118,18 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .blister-body{padding:0 1rem 1rem}
 .blister-strip{background:linear-gradient(135deg,#CBD5E1,#94A3B8);border-radius:14px;padding:12px 10px;border:2px solid #64748B}
 .blister-inner{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.b-pill{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;cursor:default;position:relative;overflow:hidden;transition:transform 0.1s}
+.b-pill{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;cursor:default;position:relative;overflow:hidden;transition:transform .1s}
 .b-pill.done{background:linear-gradient(135deg,#6EE7B7,#34D399);color:#065F46}
 .b-pill.done::after{content:'✓';font-size:13px}
 .b-pill.miss{background:#334155;color:#64748B}
 .b-pill.future{background:#475569;color:#64748B}
 .b-pill.today{background:linear-gradient(135deg,#60A5FA,#3B82F6);cursor:pointer;animation:ppulse 1.4s ease-in-out infinite}
 .b-pill.today span{font-size:18px}
-.b-pill.today:active{transform:scale(0.82)}
+.b-pill.today:active{transform:scale(.82)}
 .b-pill.popped{background:linear-gradient(135deg,#6EE7B7,#34D399);animation:none;cursor:default}
 .b-pill.popped::after{content:'✓';font-size:15px;color:#065F46;font-weight:900}
-.b-num{position:absolute;bottom:2px;font-size:7px;opacity:0.65;font-weight:700}
-.pop-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.7);animation:ripple 0.45s ease-out forwards;pointer-events:none}
+.b-num{position:absolute;bottom:2px;font-size:7px;opacity:.65;font-weight:700}
+.pop-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.7);animation:ripple .45s ease-out forwards;pointer-events:none}
 .blister-legend{display:flex;gap:10px;padding:0 1.25rem 1rem;flex-wrap:wrap}
 .leg{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
 .leg-dot{width:9px;height:9px;border-radius:50%}
@@ -140,302 +137,348 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .b-ok-emoji{font-size:28px}
 .b-ok-text{font-size:14px;font-weight:800;color:#065F46;margin-top:4px}
 
-/* SETTINGS MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+/* ===== PANTALLA GESTIÓN DE PASTILLAS ===== */
+.pills-screen{background:var(--bg)}
+.pills-header{padding:1.25rem 1.25rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0}
+.pills-header-title{font-size:18px;font-weight:900;color:var(--text);flex:1}
+.add-btn{background:var(--green);color:#fff;border:none;border-radius:var(--rs);padding:8px 16px;font-size:13px;font-weight:800;font-family:inherit;cursor:pointer}
+
+.pills-list{padding:1rem 1.25rem;display:flex;flex-direction:column;gap:10px}
+.pill-item{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:1rem 1.25rem;display:flex;align-items:center;gap:12px}
+.pill-item-icon{font-size:32px;flex-shrink:0}
+.pill-item-info{flex:1}
+.pill-item-name{font-size:15px;font-weight:800;color:var(--text)}
+.pill-item-time{font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.pill-item-notes{font-size:12px;font-weight:600;color:var(--light);margin-top:2px}
+.pill-item-btns{display:flex;gap:6px}
+.btn-edit{background:var(--blue-bg);border:1px solid #C7D7F5;color:#1a7fd4;border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.btn-del{background:var(--red-bg);border:1px solid #FFCDD2;color:var(--red);border-radius:var(--rs);padding:7px 12px;font-size:12px;font-weight:800;font-family:inherit;cursor:pointer}
+.pill-item-alarm{display:flex;align-items:center;gap:6px;margin-top:6px}
+.alarm-dot{width:8px;height:8px;border-radius:50%;background:#E5E7EB}
+.alarm-dot.on{background:var(--green)}
+.alarm-label{font-size:11px;font-weight:700;color:var(--muted)}
+.empty-pills{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-pills-icon{font-size:48px;margin-bottom:1rem;display:block}
+.empty-pills-text{font-size:14px;font-weight:700}
+
+/* MODAL AGREGAR/EDITAR PASTILLA */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center}
 .modal-bg.hidden{display:none}
-.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:430px;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal{background:var(--surface);border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .modal-title{font-size:18px;font-weight:900;color:var(--text);margin-bottom:1.25rem}
 .field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:1rem}
-.field-label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em}
+.field-label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .field-input{padding:12px 14px;border:2px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:inherit;font-weight:700;color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none}
 .field-input:focus{border-color:var(--green)}
-.modal-save{width:100%;padding:14px;border-radius:var(--rs);border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--green);color:#fff;margin-top:0.5rem;-webkit-appearance:none}
+.modal-save{width:100%;padding:14px;border-radius:var(--rs);border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--green);color:#fff;margin-top:.5rem}
 .modal-cancel{width:100%;padding:10px;border-radius:var(--rs);border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:transparent;color:var(--muted);margin-top:4px}
 
 /* NOTIF TOGGLE */
-.notif-toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:2px solid var(--border);border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:border-color 0.2s;gap:12px}
+.notif-toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:2px solid var(--border);border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:border-color .2s;gap:12px}
 .notif-toggle-row.on{border-color:var(--green);background:var(--green-bg)}
-.toggle-pill{width:48px;height:28px;border-radius:14px;background:#CBD5E1;transition:background 0.25s;flex-shrink:0;position:relative}
+.toggle-pill{width:48px;height:28px;border-radius:14px;background:#CBD5E1;transition:background .25s;flex-shrink:0;position:relative}
 .toggle-pill.on{background:var(--green)}
-.toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.2);transition:transform 0.25s}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:transform .25s}
 .toggle-thumb.on{transform:translateX(20px)}
+.notif-status-msg{font-size:12px;font-weight:600;margin-top:6px;display:none}
 
-/* NOTIF BANNER (main screen) */
-.notif-banner{margin:0.5rem 1.25rem 0;background:#FEF9EE;border:1px solid #FDE68A;border-radius:var(--rs);padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
-.nb-icon{font-size:20px}
-.nb-text{font-size:12px;font-weight:700;color:#92400E;flex:1}
-.nb-arrow{font-size:14px;color:#B45309}
+/* CONFIRM DELETE */
+.confirm-modal{background:var(--surface);border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2rem;width:100%;max-width:430px}
+.confirm-icon{font-size:48px;text-align:center;display:block;margin-bottom:.75rem}
+.confirm-title{font-size:17px;font-weight:900;color:var(--text);text-align:center;margin-bottom:.5rem}
+.confirm-sub{font-size:13px;color:var(--muted);font-weight:600;text-align:center;margin-bottom:1.5rem;line-height:1.5}
+.btn-confirm-del{width:100%;padding:14px;border-radius:var(--rs);border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--red);color:#fff;margin-bottom:8px}
+.btn-confirm-cancel{width:100%;padding:12px;border-radius:var(--rs);border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:transparent;color:var(--muted)}
 
-/* ANIMATIONS */
 @keyframes float-pill{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-13px)}}
 @keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
 @keyframes hint-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 @keyframes burst-in{0%{transform:scale(0) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
-@keyframes ppulse{0%,100%{box-shadow:0 0 0 4px rgba(59,130,246,0.25)}50%{box-shadow:0 0 0 8px rgba(59,130,246,0.1)}}
+@keyframes ppulse{0%,100%{box-shadow:0 0 0 4px rgba(59,130,246,.25)}50%{box-shadow:0 0 0 8px rgba(59,130,246,.1)}}
 @keyframes ripple{0%{width:0;height:0;opacity:1;top:50%;left:50%;transform:translate(-50%,-50%)}100%{width:150%;height:150%;opacity:0;top:50%;left:50%;transform:translate(-50%,-50%)}}
-@keyframes monster-b{0%{transform:scale(1)}35%{transform:scale(1.25) rotate(-8deg)}65%{transform:scale(0.9) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
-@keyframes float-in{0%{transform:scale(0.5) translateY(20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
+@keyframes monster-b{0%{transform:scale(1)}35%{transform:scale(1.25) rotate(-8deg)}65%{transform:scale(.9) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes float-in{0%{transform:scale(.5) translateY(20px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
 </style>
 </head>
 <body>
-
 <div class="app" id="app">
 
-  <!-- ===== ONBOARDING ===== -->
-  <div class="screen" id="s-onboard">
-    <div class="ob-wrap">
-      <div class="ob-hero">
-        <span class="ob-emoji">💊</span>
-        <div class="ob-title">Bienvenido a PastillaTrack</div>
-        <div class="ob-sub">Tu compañero diario para no olvidarte de tomar tu medicación</div>
+<!-- ONBOARDING -->
+<div class="screen" id="s-onboard">
+  <div class="ob-wrap">
+    <div class="ob-hero">
+      <span class="ob-emoji">💊</span>
+      <div class="ob-title">Bienvenido a PastillaTrack</div>
+      <div class="ob-sub">Tu compañero diario para no olvidarte de tomar tu medicación</div>
+    </div>
+    <div class="step-dots">
+      <div class="sdot on" id="dot0"></div>
+      <div class="sdot" id="dot1"></div>
+      <div class="sdot" id="dot2"></div>
+    </div>
+    <div class="ob-step active" id="step0">
+      <div class="ob-label">¿Cómo te llamás?</div>
+      <input class="ob-input" id="inp-name" placeholder="Tu nombre" maxlength="20" type="text" autocomplete="given-name"/>
+      <div style="font-size:13px;color:var(--muted);font-weight:600">Te saludaremos así cada día 👋</div>
+    </div>
+    <div class="ob-step" id="step1">
+      <div class="ob-label">¿Qué pastilla tomás?</div>
+      <div class="pill-options" id="pill-grid">
+        <div class="pill-opt sel" onclick="selPillOpt(this,'💊','Pastilla')"><span class="pill-opt-icon">💊</span><div class="pill-opt-name">Genérica</div></div>
+        <div class="pill-opt" onclick="selPillOpt(this,'❤️','Cardíaca')"><span class="pill-opt-icon">❤️</span><div class="pill-opt-name">Corazón</div></div>
+        <div class="pill-opt" onclick="selPillOpt(this,'🧠','Neurológica')"><span class="pill-opt-icon">🧠</span><div class="pill-opt-name">Mental</div></div>
+        <div class="pill-opt" onclick="selPillOpt(this,'🩺','Médica')"><span class="pill-opt-icon">🩺</span><div class="pill-opt-name">Médica</div></div>
       </div>
-
-      <div class="step-dots">
-        <div class="sdot on" id="dot0"></div>
-        <div class="sdot" id="dot1"></div>
-        <div class="sdot" id="dot2"></div>
-      </div>
-
-      <!-- Paso 0: Nombre -->
-      <div class="ob-step active" id="step0">
-        <div class="ob-label">¿Cómo te llamás?</div>
-        <input class="ob-input" id="inp-name" placeholder="Tu nombre" maxlength="20" type="text" autocomplete="given-name"/>
-        <div style="font-size:13px;color:var(--muted);font-weight:600">Te saludaremos así cada día 👋</div>
-      </div>
-
-      <!-- Paso 1: Pastilla -->
-      <div class="ob-step" id="step1">
-        <div class="ob-label">¿Qué pastilla tomás?</div>
-        <div class="pill-options" id="pill-grid">
-          <div class="pill-opt sel" onclick="selPillOpt(this,'💊','Pastilla')">
-            <span class="pill-opt-icon">💊</span>
-            <div class="pill-opt-name">Genérica</div>
-          </div>
-          <div class="pill-opt" onclick="selPillOpt(this,'❤️','Cardíaca')">
-            <span class="pill-opt-icon">❤️</span>
-            <div class="pill-opt-name">Corazón</div>
-          </div>
-          <div class="pill-opt" onclick="selPillOpt(this,'🧠','Neurológica')">
-            <span class="pill-opt-icon">🧠</span>
-            <div class="pill-opt-name">Mental</div>
-          </div>
-          <div class="pill-opt" onclick="selPillOpt(this,'🩺','Médica')">
-            <span class="pill-opt-icon">🩺</span>
-            <div class="pill-opt-name">Médica</div>
-          </div>
-        </div>
-        <div>
-          <div class="ob-label" style="margin-bottom:6px">Nombre (opcional)</div>
-          <input class="ob-input" id="inp-pill" placeholder="Ej: Ibuprofeno, Metformina..." maxlength="30" type="text"/>
-        </div>
-      </div>
-
-      <!-- Paso 2: Hora -->
-      <div class="ob-step" id="step2">
-        <div class="ob-label">¿A qué hora la tomás?</div>
-        <input class="time-input" id="inp-time" type="time" value="08:00"/>
-        <div style="font-size:13px;color:var(--muted);font-weight:600">Te lo recordaremos cada día ⏰</div>
-        <div>
-          <div class="ob-label" style="margin-bottom:6px">Notas (opcional)</div>
-          <input class="ob-input" id="inp-notes" placeholder="Ej: Con comida, con agua..." maxlength="50" type="text"/>
-        </div>
-      </div>
-
-      <div style="margin-top:auto;padding-top:1.5rem;display:flex;flex-direction:column;gap:8px">
-        <button class="ob-next" id="ob-next-btn" onclick="obNext()">Siguiente →</button>
-        <button class="ob-back" id="ob-back-btn" onclick="obBack()" style="display:none">← Atrás</button>
+      <div>
+        <div class="ob-label" style="margin-bottom:6px">Nombre (opcional)</div>
+        <input class="ob-input" id="inp-pill" placeholder="Ej: Ibuprofeno, Metformina..." maxlength="30" type="text"/>
       </div>
     </div>
-  </div>
-
-  <!-- ===== MAIN APP ===== -->
-  <div class="screen hidden" id="s-main">
-    <div class="top-bar">
-      <div class="top-row">
-        <div class="user-row">
-          <div class="avatar" id="main-avatar">?</div>
-          <div>
-            <div class="user-name" id="main-name">—</div>
-            <div class="user-sub" id="main-date">Hoy</div>
-          </div>
-        </div>
-        <div class="streak-chip" onclick="openSettings()">
-          <span style="font-size:14px">🔥</span>
-          <span id="chip-streak">0 días</span>
-        </div>
-      </div>
-      <div class="pill-banner">
-        <div class="pill-banner-icon" id="main-pill-icon">💊</div>
-        <div>
-          <div class="pbi-name" id="main-pill-name">Mi pastilla</div>
-          <div class="pbi-time" id="main-pill-time">⏰ 08:00</div>
-        </div>
+    <div class="ob-step" id="step2">
+      <div class="ob-label">¿A qué hora la tomás?</div>
+      <input class="time-input" id="inp-time" type="time" value="08:00"/>
+      <div style="font-size:13px;color:var(--muted);font-weight:600">Te lo recordaremos cada día ⏰</div>
+      <div>
+        <div class="ob-label" style="margin-bottom:6px">Notas (opcional)</div>
+        <input class="ob-input" id="inp-notes" placeholder="Ej: Con comida, con agua..." maxlength="50" type="text"/>
       </div>
     </div>
-
-    <!-- Banner notificaciones -->
-    <div class="notif-banner" id="notif-banner" onclick="openSettings()" style="display:none">
-      <span class="nb-icon">🔔</span>
-      <span class="nb-text">Activá el recordatorio diario para tu pastilla</span>
-      <span class="nb-arrow">→</span>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat"><div class="stat-n" id="st-racha">0</div><div class="stat-l">Racha 🔥</div></div>
-      <div class="stat"><div class="stat-n" id="st-mes">0</div><div class="stat-l">Este mes</div></div>
-      <div class="stat"><div class="stat-n" id="st-pct">—</div><div class="stat-l">Logro</div></div>
-    </div>
-
-    <div class="tabs-wrap">
-      <div class="tabs">
-        <button class="tab on" id="t-drag" onclick="sw('drag')">🐉 Tragador</button>
-        <button class="tab" id="t-blister" onclick="sw('blister')">💊 Blíster</button>
-      </div>
-    </div>
-
-    <div class="scroll-area">
-      <!-- Panel Tragador -->
-      <div id="p-drag" class="panel">
-        <div class="drag-card">
-          <div class="drag-scene" id="drag-scene">
-            <span class="cloud" style="top:12px;left:8%">☁️</span>
-            <span class="cloud" style="top:16px;right:10%;animation-delay:-3.5s;font-size:20px">☁️</span>
-            <div class="hill1"></div>
-            <div class="hill2"></div>
-            <div class="ground"></div>
-            <div id="pill-el" class="pill-drag floating">💊</div>
-            <div class="drag-hint" id="drag-hint">
-              <div class="hint-bubble">¡Arrastrame al monstruo!</div>
-              <div class="hint-arrow">↓</div>
-            </div>
-            <div class="monster-wrap">
-              <div class="monster-body" id="monster-face">😋</div>
-              <div class="monster-tag" id="monster-tag">¡Tengo hambre!</div>
-            </div>
-          </div>
-          <div class="drag-footer">
-            <div class="d-dot" id="drag-dot"></div>
-            <div class="d-status" id="drag-status">Pastilla esperando ser tomada</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel Blíster -->
-      <div id="p-blister" class="panel" style="display:none">
-        <div class="blister-card">
-          <div class="blister-top">
-            <div class="blister-title">Blíster del mes</div>
-            <div class="blister-sub">Tocá la pastilla de hoy para registrarla</div>
-          </div>
-          <div class="blister-body">
-            <div class="blister-strip">
-              <div class="blister-inner" id="blister-grid"></div>
-            </div>
-          </div>
-          <div class="blister-legend">
-            <div class="leg"><div class="leg-dot" style="background:#34D399"></div>Tomada</div>
-            <div class="leg"><div class="leg-dot" style="background:#334155"></div>Sin tomar</div>
-            <div class="leg"><div class="leg-dot" style="background:#3B82F6"></div>Hoy</div>
-          </div>
-          <div class="b-ok-box" id="b-ok">
-            <div class="b-ok-emoji">💥</div>
-            <div class="b-ok-text">¡POP! Toma registrada</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== SETTINGS MODAL ===== -->
-  <div class="modal-bg hidden" id="modal-bg" onclick="closeBg(event)">
-    <div class="modal">
-      <div class="modal-title">⚙️ Ajustes</div>
-      <div class="field-group">
-        <div class="field-label">Tu nombre</div>
-        <input class="field-input" id="set-name" maxlength="20" type="text"/>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Nombre de la pastilla</div>
-        <input class="field-input" id="set-pill" maxlength="30" type="text"/>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Ícono</div>
-        <div class="pill-options" id="set-icon-grid" style="gap:6px">
-          <div class="pill-opt" onclick="selIcon(this,'💊')"><span class="pill-opt-icon">💊</span></div>
-          <div class="pill-opt" onclick="selIcon(this,'❤️')"><span class="pill-opt-icon">❤️</span></div>
-          <div class="pill-opt" onclick="selIcon(this,'🧠')"><span class="pill-opt-icon">🧠</span></div>
-          <div class="pill-opt" onclick="selIcon(this,'🩺')"><span class="pill-opt-icon">🩺</span></div>
-        </div>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Hora del recordatorio</div>
-        <input class="field-input" id="set-time" type="time"/>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Notas</div>
-        <input class="field-input" id="set-notes" maxlength="50" placeholder="Ej: Con comida..." type="text"/>
-      </div>
-      <div class="field-group">
-        <div class="field-label">Recordatorio</div>
-        <div class="notif-toggle-row" id="notif-toggle-row" onclick="toggleNotif()">
-          <div>
-            <div style="font-size:14px;font-weight:800;color:var(--text)">🔔 Notificación diaria</div>
-            <div style="font-size:12px;font-weight:600;color:var(--muted)" id="notif-toggle-sub">Te avisamos a la hora configurada</div>
-          </div>
-          <div class="toggle-pill" id="toggle-pill">
-            <div class="toggle-thumb" id="toggle-thumb"></div>
-          </div>
-        </div>
-        <div id="notif-status-msg" style="font-size:12px;font-weight:600;margin-top:6px;display:none"></div>
-      </div>
-      <button class="modal-save" onclick="saveSettings()">Guardar cambios</button>
-      <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
+    <div style="margin-top:auto;padding-top:1.5rem;display:flex;flex-direction:column;gap:8px">
+      <button class="ob-next" id="ob-next-btn" onclick="obNext()">Siguiente →</button>
+      <button class="ob-back" id="ob-back-btn" onclick="obBack()" style="display:none">← Atrás</button>
     </div>
   </div>
 </div>
 
+<!-- MAIN -->
+<div class="screen hidden" id="s-main" style="display:flex;flex-direction:column">
+  <div class="top-bar">
+    <div class="top-row">
+      <div class="user-row">
+        <div class="avatar" id="main-avatar">?</div>
+        <div>
+          <div class="user-name" id="main-name">—</div>
+          <div class="user-sub" id="main-date">Hoy</div>
+        </div>
+      </div>
+      <div class="top-btns">
+        <div class="pills-btn" onclick="openPillsScreen()" title="Gestionar pastillas">⚙️</div>
+        <div class="streak-chip">
+          <span style="font-size:14px">🔥</span>
+          <span id="chip-streak">0 días</span>
+        </div>
+      </div>
+    </div>
+    <!-- Chips de pastillas -->
+    <div class="pills-scroll" id="pills-scroll"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n" id="st-racha">0</div><div class="stat-l">Racha 🔥</div></div>
+    <div class="stat"><div class="stat-n" id="st-mes">0</div><div class="stat-l">Este mes</div></div>
+    <div class="stat"><div class="stat-n" id="st-pct">—</div><div class="stat-l">Logro</div></div>
+  </div>
+
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <button class="tab on" id="t-drag" onclick="sw('drag')">🐉 Tragador</button>
+      <button class="tab" id="t-blister" onclick="sw('blister')">💊 Blíster</button>
+    </div>
+  </div>
+
+  <div class="scroll-area">
+    <div id="p-drag" class="panel">
+      <div class="drag-card">
+        <div class="drag-scene" id="drag-scene">
+          <span class="cloud" style="top:12px;left:8%">☁️</span>
+          <span class="cloud" style="top:16px;right:10%;animation-delay:-3.5s;font-size:20px">☁️</span>
+          <div class="hill1"></div><div class="hill2"></div><div class="ground"></div>
+          <div id="pill-el" class="pill-drag floating">💊</div>
+          <div class="drag-hint" id="drag-hint">
+            <div class="hint-bubble">¡Arrastrame al monstruo!</div>
+            <div class="hint-arrow">↓</div>
+          </div>
+          <div class="monster-wrap">
+            <div class="monster-body" id="monster-face">😋</div>
+            <div class="monster-tag" id="monster-tag">¡Tengo hambre!</div>
+          </div>
+        </div>
+        <div class="drag-footer">
+          <div class="d-dot" id="drag-dot"></div>
+          <div class="d-status" id="drag-status">Pastilla esperando ser tomada</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="p-blister" class="panel" style="display:none">
+      <div class="blister-card">
+        <div class="blister-top">
+          <div class="blister-title">Blíster del mes</div>
+          <div class="blister-sub">Tocá la pastilla de hoy para registrarla</div>
+        </div>
+        <div class="blister-body">
+          <div class="blister-strip"><div class="blister-inner" id="blister-grid"></div></div>
+        </div>
+        <div class="blister-legend">
+          <div class="leg"><div class="leg-dot" style="background:#34D399"></div>Tomada</div>
+          <div class="leg"><div class="leg-dot" style="background:#334155"></div>Sin tomar</div>
+          <div class="leg"><div class="leg-dot" style="background:#3B82F6"></div>Hoy</div>
+        </div>
+        <div class="b-ok-box" id="b-ok">
+          <div class="b-ok-emoji">💥</div>
+          <div class="b-ok-text">¡POP! Toma registrada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANTALLA GESTIÓN DE PASTILLAS -->
+<div class="screen hidden" id="s-pills">
+  <div class="pills-header">
+    <div class="back-btn" onclick="closePillsScreen()">←</div>
+    <div class="pills-header-title">Mis Pastillas</div>
+    <button class="add-btn" onclick="openAddPill()">+ Agregar</button>
+  </div>
+  <div class="pills-list" id="pills-list"></div>
+</div>
+
+<!-- MODAL AGREGAR/EDITAR PASTILLA -->
+<div class="modal-bg hidden" id="pill-modal-bg" onclick="closePillModalBg(event)">
+  <div class="modal">
+    <div class="modal-title" id="pill-modal-title">Nueva Pastilla</div>
+    <input type="hidden" id="edit-pill-id"/>
+    <div class="field-group">
+      <div class="field-label">Nombre</div>
+      <input class="field-input" id="pm-name" maxlength="30" type="text" placeholder="Ej: Ibuprofeno"/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Ícono</div>
+      <div class="pill-options" id="pm-icon-grid" style="gap:6px">
+        <div class="pill-opt sel" onclick="selPmIcon(this,'💊')"><span class="pill-opt-icon">💊</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'❤️')"><span class="pill-opt-icon">❤️</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'🧠')"><span class="pill-opt-icon">🧠</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'🩺')"><span class="pill-opt-icon">🩺</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'🫀')"><span class="pill-opt-icon">🫀</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'🦷')"><span class="pill-opt-icon">🦷</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'👁️')"><span class="pill-opt-icon">👁️</span></div>
+        <div class="pill-opt" onclick="selPmIcon(this,'🌿')"><span class="pill-opt-icon">🌿</span></div>
+      </div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Hora</div>
+      <input class="field-input time-input" id="pm-time" type="time" value="08:00"/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Notas (opcional)</div>
+      <input class="field-input" id="pm-notes" maxlength="50" type="text" placeholder="Ej: Con comida..."/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Recordatorio</div>
+      <div class="notif-toggle-row" id="pm-notif-row" onclick="togglePmNotif()">
+        <div>
+          <div style="font-size:14px;font-weight:800;color:var(--text)">🔔 Activar alarma</div>
+          <div style="font-size:12px;font-weight:600;color:var(--muted)" id="pm-notif-sub">Te avisamos a la hora configurada</div>
+        </div>
+        <div class="toggle-pill" id="pm-toggle-pill">
+          <div class="toggle-thumb" id="pm-toggle-thumb"></div>
+        </div>
+      </div>
+      <div class="notif-status-msg" id="pm-notif-msg"></div>
+    </div>
+    <button class="modal-save" onclick="savePill()">Guardar pastilla</button>
+    <button class="modal-cancel" onclick="closePillModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-bg hidden" id="del-modal-bg" onclick="closeDelModal(event)">
+  <div class="confirm-modal">
+    <span class="confirm-icon">🗑️</span>
+    <div class="confirm-title">¿Eliminar pastilla?</div>
+    <div class="confirm-sub" id="del-modal-sub">Se eliminará el registro de esta pastilla.</div>
+    <button class="btn-confirm-del" onclick="confirmDelete()">Sí, eliminar</button>
+    <button class="btn-confirm-cancel" onclick="closeDelModalDirect()">Cancelar</button>
+  </div>
+</div>
+
+</div><!-- /app -->
+
 <script>
 const TODAY = new Date().toISOString().slice(0,10);
-const DEF = {name:'',pillIcon:'💊',pillName:'Mi pastilla',time:'08:00',notes:'',history:[]};
+
+// ===== DATA MODEL =====
+// cfg.pills = [{id, name, icon, time, notes, alarmEnabled, history:[{date,done}]}]
+const DEF = {name:'', pills:[]};
 let cfg = {...DEF};
-let hist = [];
-let todayDone = false;
-let obStep = 0;
-let selPillIconVar = '💊';
-let settingIconVar = '💊';
+let activePillId = null;
+let pmIconSel = '💊';
+let pmNotifOn = false;
+let deleteTargetId = null;
 
 function loadAll(){
-  try {
-    const s = localStorage.getItem('ptv4');
+  try{
+    const s = localStorage.getItem('ptv5');
     if(s) cfg = {...DEF, ...JSON.parse(s)};
+    // migrar v4 a v5
+    if(!cfg.pills && cfg.pillName){
+      cfg.pills = [{
+        id: 'p1',
+        name: cfg.pillName || 'Mi pastilla',
+        icon: cfg.pillIcon || '💊',
+        time: cfg.time || '08:00',
+        notes: cfg.notes || '',
+        alarmEnabled: cfg.notifEnabled || false,
+        history: cfg.history || []
+      }];
+    }
+    if(!cfg.pills) cfg.pills = [];
   } catch(e){}
-  hist = cfg.history || [];
-  todayDone = hist.some(h => h.date === TODAY && h.done);
 }
 
 function saveAll(){
-  cfg.history = hist;
-  try { localStorage.setItem('ptv4', JSON.stringify(cfg)); } catch(e){}
+  try{ localStorage.setItem('ptv5', JSON.stringify(cfg)); } catch(e){}
 }
 
-function markDone(){
-  if(todayDone) return;
-  const i = hist.findIndex(h => h.date === TODAY);
-  if(i >= 0) hist[i].done = true;
-  else hist.push({date: TODAY, done: true});
-  todayDone = true;
+function getActivePill(){
+  if(!cfg.pills.length) return null;
+  return cfg.pills.find(p => p.id === activePillId) || cfg.pills[0];
+}
+
+function getTodayRecord(pill){
+  if(!pill.history) pill.history = [];
+  return pill.history.find(h => h.date === TODAY);
+}
+
+function isPillDoneToday(pill){
+  const r = getTodayRecord(pill);
+  return !!(r && r.done);
+}
+
+function markPillDone(pill){
+  if(!pill.history) pill.history = [];
+  const i = pill.history.findIndex(h => h.date === TODAY);
+  if(i >= 0) pill.history[i].done = true;
+  else pill.history.push({date: TODAY, done: true});
   saveAll();
   updateStats();
+  renderPillChips();
 }
 
+// ===== STATS =====
 function calcStreak(){
-  const s = [...hist].sort((a,b) => b.date.localeCompare(a.date));
+  const pill = getActivePill();
+  if(!pill || !pill.history) return 0;
+  const s = [...pill.history].sort((a,b) => b.date.localeCompare(a.date));
   let r = 0;
   for(const h of s){ if(h.done) r++; else break; }
   return r;
 }
 
 function updateStats(){
+  const pill = getActivePill();
+  const hist = pill ? (pill.history || []) : [];
   const done = hist.filter(h => h.done).length;
   const total = hist.length;
   const str = calcStreak();
@@ -455,26 +498,74 @@ function applyProfile(){
   const n = cfg.name || 'Usuario';
   document.getElementById('main-name').textContent = 'Hola, ' + n + ' 👋';
   document.getElementById('main-avatar').textContent = n.charAt(0).toUpperCase();
-  document.getElementById('main-pill-icon').textContent = cfg.pillIcon || '💊';
-  document.getElementById('pill-el').textContent = cfg.pillIcon || '💊';
-  document.getElementById('main-pill-name').textContent = (cfg.pillName || 'Mi pastilla') + (cfg.notes ? ' — ' + cfg.notes : '');
-  document.getElementById('main-pill-time').textContent = cfg.time ? '⏰ ' + cfg.time : 'Sin hora';
 }
 
-/* ---- ONBOARDING ---- */
+// ===== PILL CHIPS =====
+function renderPillChips(){
+  const scroll = document.getElementById('pills-scroll');
+  scroll.innerHTML = '';
+  cfg.pills.forEach(p => {
+    const done = isPillDoneToday(p);
+    const chip = document.createElement('div');
+    chip.className = 'pill-chip' + (p.id === activePillId ? ' active' : '');
+    chip.onclick = () => selectPill(p.id);
+    chip.innerHTML = `
+      <span class="pill-chip-icon">${p.icon}</span>
+      <div>
+        <div class="pill-chip-name">${p.name}</div>
+        <div class="${done ? 'pill-chip-done' : 'pill-chip-time'}">${done ? '✓ Tomada' : (p.time || '')}</div>
+      </div>`;
+    scroll.appendChild(chip);
+  });
+  // Botón agregar
+  const add = document.createElement('div');
+  add.className = 'add-pill-chip';
+  add.onclick = () => { openPillsScreen(); };
+  add.innerHTML = '<span>+ Agregar</span>';
+  scroll.appendChild(add);
+}
+
+function selectPill(id){
+  activePillId = id;
+  renderPillChips();
+  updateStats();
+  // Re-init juegos
+  const pill = getActivePill();
+  if(pill){
+    document.getElementById('pill-el').textContent = pill.icon;
+    initDrag();
+    initBlister();
+  }
+}
+
+// ===== ONBOARDING =====
+let obStep = 0;
+let selPillIconOb = '💊';
+
 function obNext(){
   if(obStep === 0){
     const n = document.getElementById('inp-name').value.trim();
     if(!n) return;
     cfg.name = n;
   } else if(obStep === 1){
-    cfg.pillIcon = selPillIconVar;
     const custom = document.getElementById('inp-pill').value.trim();
-    cfg.pillName = custom || selPillIconVar + ' Pastilla';
+    const newPill = {
+      id: 'p' + Date.now(),
+      name: custom || selPillIconOb + ' Pastilla',
+      icon: selPillIconOb,
+      time: '08:00',
+      notes: '',
+      alarmEnabled: false,
+      history: [{date: TODAY, done: false}]
+    };
+    cfg.pills = [newPill];
+    activePillId = newPill.id;
   } else if(obStep === 2){
-    cfg.time = document.getElementById('inp-time').value;
-    cfg.notes = document.getElementById('inp-notes').value.trim();
-    if(!hist.find(h => h.date === TODAY)) hist.push({date: TODAY, done: false});
+    const pill = getActivePill();
+    if(pill){
+      pill.time = document.getElementById('inp-time').value;
+      pill.notes = document.getElementById('inp-notes').value.trim();
+    }
     saveAll();
     startMain();
     return;
@@ -489,477 +580,397 @@ function obBack(){
 
 function showObStep(){
   for(let i = 0; i < 3; i++){
-    document.getElementById('step'+i).className = 'ob-step' + (i === obStep ? ' active' : '');
-    document.getElementById('dot'+i).className = 'sdot' + (i <= obStep ? ' on' : '');
+    document.getElementById('step'+i).className = 'ob-step'+(i===obStep?' active':'');
+    document.getElementById('dot'+i).className = 'sdot'+(i<=obStep?' on':'');
   }
   document.getElementById('ob-back-btn').style.display = obStep > 0 ? 'block' : 'none';
   document.getElementById('ob-next-btn').textContent = obStep === 2 ? '¡Empezar! 🚀' : 'Siguiente →';
 }
 
 function selPillOpt(el, icon, name){
-  selPillIconVar = icon;
-  document.querySelectorAll('#pill-grid .pill-opt').forEach(e => e.className = 'pill-opt');
+  selPillIconOb = icon;
+  document.querySelectorAll('#pill-grid .pill-opt').forEach(e => e.className='pill-opt');
   el.className = 'pill-opt sel';
 }
 
-/* ---- MAIN ---- */
+// ===== MAIN =====
 function startMain(){
   document.getElementById('s-onboard').className = 'screen out';
   document.getElementById('s-main').className = 'screen';
-  applyProfile();
-  setFecha();
-  updateStats();
-  initDrag();
-  initBlister();
-  initNotifState();
+  applyProfile(); setFecha(); updateStats();
+  renderPillChips();
+  const pill = getActivePill();
+  if(pill) document.getElementById('pill-el').textContent = pill.icon;
+  initDrag(); initBlister();
+  initAlarmState();
 }
 
 function sw(t){
-  document.getElementById('p-drag').style.display = t === 'drag' ? 'block' : 'none';
-  document.getElementById('p-blister').style.display = t === 'blister' ? 'block' : 'none';
-  document.getElementById('t-drag').className = 'tab' + (t === 'drag' ? ' on' : '');
-  document.getElementById('t-blister').className = 'tab' + (t === 'blister' ? ' on' : '');
+  document.getElementById('p-drag').style.display = t==='drag' ? 'block' : 'none';
+  document.getElementById('p-blister').style.display = t==='blister' ? 'block' : 'none';
+  document.getElementById('t-drag').className = 'tab'+(t==='drag'?' on':'');
+  document.getElementById('t-blister').className = 'tab'+(t==='blister'?' on':'');
 }
 
-/* ---- DRAG ---- */
+// ===== DRAG =====
 function initDrag(){
-  const scene = document.getElementById('drag-scene');
-  const pill = document.getElementById('pill-el');
-  const face = document.getElementById('monster-face');
-  const tag = document.getElementById('monster-tag');
-  const hint = document.getElementById('drag-hint');
-  const dot = document.getElementById('drag-dot');
+  const scene  = document.getElementById('drag-scene');
+  const pill   = document.getElementById('pill-el');
+  const face   = document.getElementById('monster-face');
+  const tag    = document.getElementById('monster-tag');
+  const hint   = document.getElementById('drag-hint');
+  const dot    = document.getElementById('drag-dot');
   const status = document.getElementById('drag-status');
+  const activePill = getActivePill();
 
-  if(todayDone){
-    pill.style.display = 'none';
-    hint.style.display = 'none';
-    face.textContent = '😄';
-    tag.textContent = '¡Qué rico!';
+  // Reset listeners clonando
+  const newScene = scene.cloneNode(true);
+  scene.parentNode.replaceChild(newScene, scene);
+  const newPill = newScene.querySelector('#pill-el');
+  const newFace = newScene.querySelector('#monster-face');
+  const newTag  = newScene.querySelector('#monster-tag');
+  const newHint = newScene.querySelector('#drag-hint');
+
+  if(activePill) newPill.textContent = activePill.icon;
+
+  if(activePill && isPillDoneToday(activePill)){
+    newPill.style.display = 'none';
+    newHint.style.display = 'none';
+    newFace.textContent = '😄';
+    newTag.textContent = '¡Qué rico!';
     dot.className = 'd-dot ok';
     status.textContent = '¡Pastilla tomada hoy!';
     return;
   }
 
+  dot.className = 'd-dot';
+  status.textContent = 'Pastilla esperando ser tomada';
+  newPill.className = 'pill-drag floating';
+
   let drag = false, ox = 0, oy = 0;
 
-  function getC(el){
-    const r = el.getBoundingClientRect();
-    return {x: r.left + r.width/2, y: r.top + r.height/2};
-  }
+  function getC(el){ const r = el.getBoundingClientRect(); return {x:r.left+r.width/2, y:r.top+r.height/2}; }
 
-  function startD(cx, cy){
-    drag = true;
-    pill.className = 'pill-drag';
-    hint.style.opacity = '0';
-    const pr = pill.getBoundingClientRect();
-    ox = cx - pr.left;
-    oy = cy - pr.top;
+  function startD(cx,cy){
+    drag=true; newPill.className='pill-drag'; newHint.style.opacity='0';
+    const pr = newPill.getBoundingClientRect(); ox=cx-pr.left; oy=cy-pr.top;
   }
-
-  function moveD(cx, cy){
+  function moveD(cx,cy){
     if(!drag) return;
-    const r = scene.getBoundingClientRect();
-    const px = cx - r.left - ox;
-    const py = cy - r.top - oy;
-    pill.style.left = px + 'px';
-    pill.style.top = py + 'px';
-    pill.style.transform = 'none';
-    const mc = getC(face);
-    const d = Math.hypot(cx - mc.x, cy - mc.y);
-    if(d < 80){ face.textContent = '😮'; face.style.transform = 'scale(1.2)'; tag.textContent = '¡Dámela ya!'; }
-    else if(d < 130){ face.textContent = '😯'; face.style.transform = 'scale(1.05)'; tag.textContent = '¡Casi!'; }
-    else{ face.textContent = '😋'; face.style.transform = 'scale(1)'; tag.textContent = '¡Tengo hambre!'; }
+    const r = newScene.getBoundingClientRect();
+    newPill.style.left=(cx-r.left-ox)+'px'; newPill.style.top=(cy-r.top-oy)+'px'; newPill.style.transform='none';
+    const mc=getC(newFace), d=Math.hypot(cx-mc.x,cy-mc.y);
+    if(d<80){newFace.textContent='😮';newFace.style.transform='scale(1.2)';newTag.textContent='¡Dámela ya!';}
+    else if(d<130){newFace.textContent='😯';newFace.style.transform='scale(1.05)';newTag.textContent='¡Casi!';}
+    else{newFace.textContent='😋';newFace.style.transform='scale(1)';newTag.textContent='¡Tengo hambre!';}
   }
-
-  function endD(cx, cy){
-    if(!drag) return;
-    drag = false;
-    const mc = getC(face);
-    const d = Math.hypot(cx - mc.x, cy - mc.y);
-    if(d < 95){
-      doSwallow();
-    } else {
-      pill.className = 'pill-drag floating';
-      pill.style.left = '50%';
-      pill.style.top = '44px';
-      pill.style.transform = 'translateX(-50%)';
-      face.textContent = '😋';
-      face.style.transform = 'scale(1)';
-      tag.textContent = '¡Tengo hambre!';
-      hint.style.opacity = '1';
+  function endD(cx,cy){
+    if(!drag) return; drag=false;
+    const mc=getC(newFace), d=Math.hypot(cx-mc.x,cy-mc.y);
+    if(d<95){ doSwallow(); }
+    else{
+      newPill.className='pill-drag floating'; newPill.style.left='50%'; newPill.style.top='44px'; newPill.style.transform='translateX(-50%)';
+      newFace.textContent='😋'; newFace.style.transform='scale(1)'; newTag.textContent='¡Tengo hambre!'; newHint.style.opacity='1';
     }
   }
-
   function doSwallow(){
-    pill.style.display = 'none';
-    hint.style.display = 'none';
-    face.textContent = '😄';
-    face.style.animation = 'monster-b 0.6s ease';
-    tag.textContent = '¡Qué rico!';
-    const ov = document.createElement('div');
-    ov.className = 'done-ov';
-    ov.innerHTML = '<div class="burst">✨</div><div class="burst-text">¡Pastilla tragada!</div>';
-    scene.appendChild(ov);
-    setTimeout(() => ov.remove(), 2200);
-    dot.className = 'd-dot ok';
-    status.textContent = '¡Pastilla tomada hoy!';
-    markDone();
+    newPill.style.display='none'; newHint.style.display='none';
+    newFace.textContent='😄'; newFace.style.animation='monster-b .6s ease'; newTag.textContent='¡Qué rico!';
+    const ov=document.createElement('div'); ov.className='done-ov';
+    ov.innerHTML='<div class="burst">✨</div><div class="burst-text">¡Pastilla tragada!</div>';
+    newScene.appendChild(ov); setTimeout(()=>ov.remove(),2200);
+    dot.className='d-dot ok'; status.textContent='¡Pastilla tomada hoy!';
+    markPillDone(activePill);
+    if(window.AndroidBridge) try{ window.AndroidBridge.vibrate(); }catch(e){}
   }
 
-  pill.addEventListener('mousedown', e => { startD(e.clientX, e.clientY); e.preventDefault(); });
-  document.addEventListener('mousemove', e => { moveD(e.clientX, e.clientY); });
-  document.addEventListener('mouseup', e => { endD(e.clientX, e.clientY); });
-
-  pill.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    startD(t.clientX, t.clientY);
-    e.preventDefault();
-  }, {passive: false});
-
-  document.addEventListener('touchmove', e => {
-    if(drag){
-      const t = e.touches[0];
-      moveD(t.clientX, t.clientY);
-      e.preventDefault();
-    }
-  }, {passive: false});
-
-  document.addEventListener('touchend', e => {
-    const t = e.changedTouches[0];
-    endD(t.clientX, t.clientY);
-  });
+  newPill.addEventListener('mousedown',e=>{startD(e.clientX,e.clientY);e.preventDefault()});
+  document.addEventListener('mousemove',e=>{moveD(e.clientX,e.clientY)});
+  document.addEventListener('mouseup',e=>{endD(e.clientX,e.clientY)});
+  newPill.addEventListener('touchstart',e=>{const t=e.touches[0];startD(t.clientX,t.clientY);e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',e=>{if(drag){const t=e.touches[0];moveD(t.clientX,t.clientY);e.preventDefault();}},{passive:false});
+  document.addEventListener('touchend',e=>{const t=e.changedTouches[0];endD(t.clientX,t.clientY);});
 }
 
-/* ---- BLISTER ---- */
+// ===== BLISTER =====
 function initBlister(){
   const grid = document.getElementById('blister-grid');
-  grid.innerHTML = '';
+  const okBox = document.getElementById('b-ok');
+  grid.innerHTML = ''; okBox.style.display='none';
+  const activePill = getActivePill();
+  if(!activePill) return;
+
   const now = new Date();
   const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
   const dn = now.getDate();
 
-  for(let d = 1; d <= days; d++){
-    const ds = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+  for(let d=1; d<=days; d++){
+    const ds = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const cell = document.createElement('div');
-    const rec = hist.find(h => h.date === ds);
+    const rec = (activePill.history||[]).find(h=>h.date===ds);
     if(d < dn){
-      cell.className = 'b-pill ' + (rec && rec.done ? 'done' : 'miss');
-      if(!(rec && rec.done)){
-        const n = document.createElement('div');
-        n.className = 'b-num';
-        n.textContent = d;
-        cell.appendChild(n);
-      }
-    } else if(d === dn){
-      if(todayDone){
-        cell.className = 'b-pill popped';
-        document.getElementById('b-ok').style.display = 'block';
+      cell.className='b-pill '+(rec&&rec.done?'done':'miss');
+      if(!(rec&&rec.done)){ const n=document.createElement('div'); n.className='b-num'; n.textContent=d; cell.appendChild(n); }
+    } else if(d===dn){
+      if(isPillDoneToday(activePill)){
+        cell.className='b-pill popped'; okBox.style.display='block';
       } else {
-        cell.className = 'b-pill today';
-        const s = document.createElement('span');
-        s.textContent = cfg.pillIcon || '💊';
-        cell.appendChild(s);
-        cell.addEventListener('click', function(){ popIt(this); });
+        cell.className='b-pill today';
+        const s=document.createElement('span'); s.textContent=activePill.icon; cell.appendChild(s);
+        cell.addEventListener('click', function(){ popIt(this, activePill); });
       }
     } else {
-      cell.className = 'b-pill future';
-      const n = document.createElement('div');
-      n.className = 'b-num';
-      n.textContent = d;
-      cell.appendChild(n);
+      cell.className='b-pill future';
+      const n=document.createElement('div'); n.className='b-num'; n.textContent=d; cell.appendChild(n);
     }
     grid.appendChild(cell);
   }
 }
 
-function popIt(el){
-  const rip = document.createElement('div');
-  rip.className = 'pop-ripple';
-  el.appendChild(rip);
+function popIt(el, pill){
+  const rip=document.createElement('div'); rip.className='pop-ripple'; el.appendChild(rip);
   playPop();
-  setTimeout(() => {
-    el.className = 'b-pill popped';
-    el.innerHTML = '';
-    document.getElementById('b-ok').style.display = 'block';
-    markDone();
+  setTimeout(()=>{
+    el.className='b-pill popped'; el.innerHTML='';
+    document.getElementById('b-ok').style.display='block';
+    markPillDone(pill);
   }, 380);
 }
 
 function playPop(){
-  // Vibración nativa en Android
-  if (window.AndroidBridge) {
-    try { window.AndroidBridge.vibrate(); } catch(e){}
-  }
-  // Sonido web como respaldo
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator(), g = ctx.createGain();
+  if(window.AndroidBridge) try{ window.AndroidBridge.vibrate(); }catch(e){}
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
     o.connect(g); g.connect(ctx.destination);
-    o.type = 'sine';
-    o.frequency.setValueAtTime(900, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.18);
-    g.gain.setValueAtTime(0.3, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
-    o.start(); o.stop(ctx.currentTime + 0.22);
-  } catch(e){}
+    o.type='sine'; o.frequency.setValueAtTime(900,ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.18);
+    g.gain.setValueAtTime(0.3,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.22);
+    o.start(); o.stop(ctx.currentTime+0.22);
+  }catch(e){}
 }
 
-/* ---- SETTINGS ---- */
-function openSettings(){
-  document.getElementById('set-name').value = cfg.name || '';
-  document.getElementById('set-pill').value = cfg.pillName || '';
-  document.getElementById('set-time').value = cfg.time || '08:00';
-  document.getElementById('set-notes').value = cfg.notes || '';
-  settingIconVar = cfg.pillIcon || '💊';
-  document.querySelectorAll('#set-icon-grid .pill-opt').forEach(e => {
-    const ico = e.querySelector('.pill-opt-icon');
-    e.className = 'pill-opt' + (ico && ico.textContent === settingIconVar ? ' sel' : '');
+// ===== PANTALLA GESTIÓN PASTILLAS =====
+function openPillsScreen(){
+  document.getElementById('s-main').className = 'screen out';
+  document.getElementById('s-pills').className = 'screen';
+  renderPillsList();
+}
+
+function closePillsScreen(){
+  document.getElementById('s-pills').className = 'screen hidden';
+  document.getElementById('s-main').className = 'screen';
+  renderPillChips();
+  updateStats();
+}
+
+function renderPillsList(){
+  const list = document.getElementById('pills-list');
+  list.innerHTML = '';
+  if(!cfg.pills.length){
+    list.innerHTML = '<div class="empty-pills"><span class="empty-pills-icon">💊</span><div class="empty-pills-text">No tenés pastillas agregadas.<br>Tocá "+ Agregar" para empezar.</div></div>';
+    return;
+  }
+  cfg.pills.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'pill-item';
+    const alarmOn = p.alarmEnabled && window.AndroidBridge ? window.AndroidBridge.isAlarmEnabled() : p.alarmEnabled;
+    item.innerHTML = `
+      <div class="pill-item-icon">${p.icon}</div>
+      <div class="pill-item-info">
+        <div class="pill-item-name">${p.name}</div>
+        <div class="pill-item-time">⏰ ${p.time || 'Sin hora'}</div>
+        ${p.notes ? '<div class="pill-item-notes">📝 '+p.notes+'</div>' : ''}
+        <div class="pill-item-alarm">
+          <div class="alarm-dot ${alarmOn?'on':''}"></div>
+          <div class="alarm-label">${alarmOn ? 'Alarma activa' : 'Alarma inactiva'}</div>
+        </div>
+      </div>
+      <div class="pill-item-btns">
+        <button class="btn-edit" onclick="openEditPill('${p.id}')">✏️</button>
+        <button class="btn-del" onclick="openDeletePill('${p.id}')">🗑️</button>
+      </div>`;
+    list.appendChild(item);
   });
-  // Sincronizar toggle notif
-  const realEnabled = !!(cfg.notifEnabled && notifSupported() && Notification.permission === 'granted');
-  updateNotifToggleUI(realEnabled);
-  if(!notifSupported()){
-    const row = document.getElementById('notif-toggle-row');
-    if(row){ row.style.opacity='0.5'; row.style.cursor='not-allowed'; }
-    showNotifStatusMsg('Tu navegador no soporta notificaciones', '#E24B4A');
-  }
-  document.getElementById('modal-bg').className = 'modal-bg';
 }
 
-function selIcon(el, icon){
-  settingIconVar = icon;
-  document.querySelectorAll('#set-icon-grid .pill-opt').forEach(e => e.className = 'pill-opt');
-  el.className = 'pill-opt sel';
+// ===== MODAL AGREGAR/EDITAR =====
+let pmNotifEnabled = false;
+
+function openAddPill(){
+  document.getElementById('pill-modal-title').textContent = 'Nueva Pastilla';
+  document.getElementById('edit-pill-id').value = '';
+  document.getElementById('pm-name').value = '';
+  document.getElementById('pm-time').value = '08:00';
+  document.getElementById('pm-notes').value = '';
+  pmIconSel = '💊'; pmNotifEnabled = false;
+  document.querySelectorAll('#pm-icon-grid .pill-opt').forEach(e=>e.className='pill-opt');
+  document.querySelector('#pm-icon-grid .pill-opt').className='pill-opt sel';
+  updatePmNotifUI(false);
+  document.getElementById('pill-modal-bg').className = 'modal-bg';
 }
 
-function closeBg(e){
-  if(e.target === document.getElementById('modal-bg')) closeModal();
+function openEditPill(id){
+  const p = cfg.pills.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('pill-modal-title').textContent = 'Editar Pastilla';
+  document.getElementById('edit-pill-id').value = id;
+  document.getElementById('pm-name').value = p.name;
+  document.getElementById('pm-time').value = p.time || '08:00';
+  document.getElementById('pm-notes').value = p.notes || '';
+  pmIconSel = p.icon || '💊';
+  pmNotifEnabled = p.alarmEnabled || false;
+  document.querySelectorAll('#pm-icon-grid .pill-opt').forEach(e=>{
+    const ico = e.querySelector('.pill-opt-icon');
+    e.className='pill-opt'+(ico&&ico.textContent===pmIconSel?' sel':'');
+  });
+  updatePmNotifUI(pmNotifEnabled);
+  document.getElementById('pill-modal-bg').className = 'modal-bg';
 }
 
-function closeModal(){
-  document.getElementById('modal-bg').className = 'modal-bg hidden';
+function selPmIcon(el, icon){
+  pmIconSel = icon;
+  document.querySelectorAll('#pm-icon-grid .pill-opt').forEach(e=>e.className='pill-opt');
+  el.className='pill-opt sel';
 }
 
-function saveSettings(){
-  cfg.name = document.getElementById('set-name').value.trim() || cfg.name;
-  cfg.pillName = document.getElementById('set-pill').value.trim() || cfg.pillName;
-  cfg.pillIcon = settingIconVar;
-  cfg.time = document.getElementById('set-time').value;
-  cfg.notes = document.getElementById('set-notes').value.trim();
-  saveAll();
-  applyProfile();
-  document.getElementById('pill-el').textContent = cfg.pillIcon;
-
-  // Si estamos en Android, programar alarma nativa del sistema
-  if (window.AndroidBridge && cfg.notifEnabled && cfg.time) {
-    try {
-      window.AndroidBridge.setAlarm(cfg.time, cfg.pillName || 'tu pastilla', cfg.notes || '');
-    } catch(e){}
-  }
-
-  closeModal();
-}
-
-/* ---- NOTIFICACIONES ---- */
-let notifEnabled = false;
-let alarmInterval = null;
-
-function notifSupported(){
-  return 'Notification' in window;
-}
-
-function updateNotifToggleUI(enabled){
-  notifEnabled = enabled;
-  const row = document.getElementById('notif-toggle-row');
-  const pill = document.getElementById('toggle-pill');
-  const thumb = document.getElementById('toggle-thumb');
-  const sub = document.getElementById('notif-toggle-sub');
-  if(!row) return;
-  if(enabled){
-    row.classList.add('on');
-    pill.classList.add('on');
-    thumb.classList.add('on');
-    sub.textContent = 'Recordatorio activo a las ' + (cfg.time || '08:00');
+function updatePmNotifUI(on){
+  pmNotifEnabled = on;
+  const row   = document.getElementById('pm-notif-row');
+  const pill  = document.getElementById('pm-toggle-pill');
+  const thumb = document.getElementById('pm-toggle-thumb');
+  const sub   = document.getElementById('pm-notif-sub');
+  if(on){
+    row.classList.add('on'); pill.classList.add('on'); thumb.classList.add('on');
+    const t = document.getElementById('pm-time').value;
+    sub.textContent = 'Alarma activa a las ' + t;
   } else {
-    row.classList.remove('on');
-    pill.classList.remove('on');
-    thumb.classList.remove('on');
+    row.classList.remove('on'); pill.classList.remove('on'); thumb.classList.remove('on');
     sub.textContent = 'Te avisamos a la hora configurada';
   }
 }
 
-function showNotifStatusMsg(msg, color){
-  const el = document.getElementById('notif-status-msg');
-  if(!el) return;
-  el.textContent = msg;
-  el.style.color = color || 'var(--muted)';
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 4000);
-}
-
-async function toggleNotif(){
-  // Si estamos en la app Android nativa, usar alarma del sistema directamente
-  if (window.AndroidBridge) {
-    if (notifEnabled) {
-      try { window.AndroidBridge.cancelAlarm(); } catch(e){}
-      notifEnabled = false;
-      cfg.notifEnabled = false;
-      saveAll();
-      updateNotifToggleUI(false);
-      showNotifStatusMsg('Recordatorio desactivado', 'var(--muted)');
-      updateNotifBanner();
+async function togglePmNotif(){
+  if(window.AndroidBridge){
+    if(pmNotifEnabled){
+      updatePmNotifUI(false);
     } else {
-      if (cfg.time) {
-        try {
-          window.AndroidBridge.setAlarm(cfg.time, cfg.pillName || 'tu pastilla', cfg.notes || '');
-          notifEnabled = true;
-          cfg.notifEnabled = true;
-          saveAll();
-          updateNotifToggleUI(true);
-          showNotifStatusMsg('¡Listo! Te avisaremos a las ' + cfg.time + ' ✅', '#1a9e76');
-          updateNotifBanner();
-          // Notif de prueba
-          try { window.AndroidBridge.testNotification(cfg.pillName || 'tu pastilla', cfg.notes || ''); } catch(e){}
-        } catch(e) {
-          showNotifStatusMsg('Error al activar alarma: ' + e.message, '#E24B4A');
-        }
-      } else {
-        showNotifStatusMsg('Primero configurá una hora ⏰', '#BA7517');
-      }
+      const hasP = window.AndroidBridge.hasNotifPermission();
+      if(!hasP){ window.AndroidBridge.requestNotifPermission(); }
+      updatePmNotifUI(true);
+      showPmMsg('¡Alarma configurada! ✅','#1a9e76');
     }
     return;
   }
-
-  // Fallback: Web Notifications API (navegador)
-  if(!notifSupported()){
-    showNotifStatusMsg('Tu navegador no soporta notificaciones', '#E24B4A');
-    return;
-  }
-  if(notifEnabled){
-    notifEnabled = false;
-    cfg.notifEnabled = false;
-    saveAll();
-    clearAlarmChecker();
-    updateNotifToggleUI(false);
-    showNotifStatusMsg('Recordatorio desactivado', 'var(--muted)');
-    updateNotifBanner();
-    return;
-  }
-  if(Notification.permission === 'denied'){
-    showNotifStatusMsg('Permiso bloqueado. Habilitalo en ajustes del navegador 🔧', '#E24B4A');
-    return;
-  }
+  if(pmNotifEnabled){ updatePmNotifUI(false); return; }
+  if(!('Notification' in window)){ showPmMsg('Tu navegador no soporta notificaciones','#E24B4A'); return; }
+  if(Notification.permission==='denied'){ showPmMsg('Permiso bloqueado en ajustes del navegador','#E24B4A'); return; }
   const perm = await Notification.requestPermission();
-  if(perm === 'granted'){
-    notifEnabled = true;
-    cfg.notifEnabled = true;
-    saveAll();
-    startAlarmChecker();
-    updateNotifToggleUI(true);
-    showNotifStatusMsg('¡Listo! Te avisaremos a las ' + (cfg.time || '08:00') + ' ✅', '#1a9e76');
-    updateNotifBanner();
-    setTimeout(() => {
-      new Notification('PastillaTrack 💊', {
-        body: '¡Notificaciones activadas! Te recordaremos a las ' + (cfg.time || '08:00'),
-        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💊</text></svg>'
-      });
-    }, 500);
+  if(perm==='granted'){ updatePmNotifUI(true); showPmMsg('¡Notificaciones activadas! ✅','#1a9e76'); }
+  else { showPmMsg('Permiso denegado','#E24B4A'); }
+}
+
+function showPmMsg(msg, color){
+  const el = document.getElementById('pm-notif-msg');
+  el.textContent=msg; el.style.color=color; el.style.display='block';
+  setTimeout(()=>el.style.display='none', 3000);
+}
+
+function savePill(){
+  const id    = document.getElementById('edit-pill-id').value;
+  const name  = document.getElementById('pm-name').value.trim();
+  const time  = document.getElementById('pm-time').value;
+  const notes = document.getElementById('pm-notes').value.trim();
+  if(!name){ document.getElementById('pm-name').focus(); return; }
+
+  if(id){
+    // Editar existente
+    const p = cfg.pills.find(x=>x.id===id);
+    if(p){
+      p.name = name; p.icon = pmIconSel; p.time = time; p.notes = notes; p.alarmEnabled = pmNotifEnabled;
+      if(pmNotifEnabled && window.AndroidBridge){
+        try{ window.AndroidBridge.setAlarm(time, name, notes); }catch(e){}
+      } else if(!pmNotifEnabled && window.AndroidBridge){
+        try{ window.AndroidBridge.cancelAlarm(); }catch(e){}
+      }
+    }
   } else {
-    showNotifStatusMsg('Permiso denegado. No podemos enviarte recordatorios.', '#E24B4A');
+    // Nueva pastilla
+    const newPill = {
+      id: 'p'+Date.now(), name, icon: pmIconSel, time, notes,
+      alarmEnabled: pmNotifEnabled,
+      history: [{date: TODAY, done: false}]
+    };
+    cfg.pills.push(newPill);
+    if(!activePillId) activePillId = newPill.id;
+    if(pmNotifEnabled && window.AndroidBridge){
+      try{ window.AndroidBridge.setAlarm(time, name, notes); }catch(e){}
+    }
   }
+
+  saveAll();
+  closePillModal();
+  renderPillsList();
+  renderPillChips();
 }
 
-function updateNotifBanner(){
-  const banner = document.getElementById('notif-banner');
-  if(!banner) return;
-  if(notifEnabled || !notifSupported() || Notification.permission === 'denied'){
-    banner.style.display = 'none';
-  } else {
-    banner.style.display = 'flex';
+function closePillModal(){ document.getElementById('pill-modal-bg').className='modal-bg hidden'; }
+function closePillModalBg(e){ if(e.target===document.getElementById('pill-modal-bg')) closePillModal(); }
+
+// ===== ELIMINAR =====
+function openDeletePill(id){
+  deleteTargetId = id;
+  const p = cfg.pills.find(x=>x.id===id);
+  document.getElementById('del-modal-sub').textContent =
+    p ? 'Se eliminará "'+p.name+'" y todo su historial.' : 'Se eliminará esta pastilla.';
+  document.getElementById('del-modal-bg').className='modal-bg';
+}
+
+function confirmDelete(){
+  if(!deleteTargetId) return;
+  cfg.pills = cfg.pills.filter(p=>p.id!==deleteTargetId);
+  if(activePillId===deleteTargetId){
+    activePillId = cfg.pills.length ? cfg.pills[0].id : null;
   }
+  deleteTargetId = null;
+  saveAll();
+  closeDelModalDirect();
+  renderPillsList();
+  renderPillChips();
+  updateStats();
+  if(activePillId) selectPill(activePillId);
 }
 
-function startAlarmChecker(){
-  clearAlarmChecker();
-  // Chequear cada 30 segundos si es hora de notificar
-  alarmInterval = setInterval(checkAlarm, 30000);
-  checkAlarm(); // chequeo inmediato
-}
+function closeDelModal(e){ if(e.target===document.getElementById('del-modal-bg')) closeDelModalDirect(); }
+function closeDelModalDirect(){ document.getElementById('del-modal-bg').className='modal-bg hidden'; }
 
-function clearAlarmChecker(){
-  if(alarmInterval){ clearInterval(alarmInterval); alarmInterval = null; }
-}
-
-function checkAlarm(){
-  if(!notifEnabled || !cfg.time) return;
-  if(todayDone) return; // Ya tomó la pastilla hoy
-  if(Notification.permission !== 'granted') return;
-
-  const now = new Date();
-  const [hh, mm] = cfg.time.split(':').map(Number);
-  const alarmH = hh, alarmM = mm;
-  const nowH = now.getHours(), nowM = now.getMinutes();
-
-  // Disparar si es exactamente la hora (con 1 min de tolerancia)
-  if(nowH === alarmH && nowM === alarmM){
-    const lastNotifKey = 'ptv4_last_notif';
-    const lastNotif = localStorage.getItem(lastNotifKey);
-    const todayStr = now.toISOString().slice(0,10);
-    if(lastNotif === todayStr) return; // Ya notificamos hoy
-
-    localStorage.setItem(lastNotifKey, todayStr);
-    fireNotification();
-  }
-}
-
-function fireNotification(){
-  const pillName = cfg.pillName || 'tu pastilla';
-  const notes = cfg.notes ? ' — ' + cfg.notes : '';
-  new Notification('💊 ¡Hora de ' + pillName + '!', {
-    body: 'No te olvides' + notes + '. Abrí PastillaTrack para registrarla.',
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💊</text></svg>',
-    badge: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💊</text></svg>',
-    requireInteraction: true,
-    tag: 'pastillatrack-daily'
+// ===== ALARMAS =====
+function initAlarmState(){
+  cfg.pills.forEach(p => {
+    if(p.alarmEnabled && window.AndroidBridge){
+      try{ window.AndroidBridge.setAlarm(p.time, p.name, p.notes||''); }catch(e){}
+    }
   });
 }
 
-function initNotifState(){
-  if (window.AndroidBridge) {
-    try {
-      notifEnabled = !!(cfg.notifEnabled && window.AndroidBridge.isAlarmEnabled());
-    } catch(e) { notifEnabled = cfg.notifEnabled || false; }
-    updateNotifToggleUI(notifEnabled);
-    const banner = document.getElementById("notif-banner");
-    if (banner) banner.style.display = notifEnabled ? "none" : "flex";
-    return;
-  }
-  notifEnabled = !!(cfg.notifEnabled && notifSupported() && Notification.permission === "granted");
-  updateNotifToggleUI(notifEnabled);
-  updateNotifBanner();
-  if(notifEnabled) startAlarmChecker();
-}
-
-// Abrir ajustes actualiza el toggle según estado real
-const _origOpenSettings = typeof openSettings === 'function' ? openSettings : null;
-
-/* ---- BOOT ---- */
+// ===== BOOT =====
 loadAll();
 if(!cfg.name){
-  // Primera vez: mostrar onboarding
-  selPillIconVar = '💊';
+  selPillIconOb='💊';
 } else {
-  // Ya tiene perfil: ir directo a main
-  if(!hist.find(h => h.date === TODAY)) hist.push({date: TODAY, done: false});
-  document.getElementById('s-onboard').className = 'screen hidden';
-  document.getElementById('s-main').className = 'screen';
-  applyProfile();
-  setFecha();
-  updateStats();
-  initDrag();
-  initBlister();
-  initNotifState();
+  if(!activePillId && cfg.pills.length) activePillId = cfg.pills[0].id;
+  // Asegurar registro de hoy
+  cfg.pills.forEach(p=>{
+    if(!p.history) p.history=[];
+    if(!p.history.find(h=>h.date===TODAY)) p.history.push({date:TODAY,done:false});
+  });
+  document.getElementById('s-onboard').className='screen hidden';
+  document.getElementById('s-main').className='screen';
+  applyProfile(); setFecha(); updateStats();
+  renderPillChips();
+  const pill = getActivePill();
+  if(pill) document.getElementById('pill-el').textContent = pill.icon;
+  initDrag(); initBlister(); initAlarmState();
 }
 </script>
 </body>
