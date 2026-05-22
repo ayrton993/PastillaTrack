@@ -191,6 +191,19 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
 .btn-confirm-del{width:100%;padding:14px;border-radius:var(--rs);border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--red);color:#fff;margin-bottom:8px}
 .btn-confirm-cancel{width:100%;padding:12px;border-radius:var(--rs);border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;background:transparent;color:var(--muted)}
 
+/* ALARM BANNER */
+.alarm-banner{margin:.75rem 1.25rem 0;border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.alarm-banner.off{background:#FEF3C7;border:1.5px solid #FCD34D}
+.alarm-banner.on{background:var(--green-bg);border:1.5px solid var(--green)}
+.ab-icon{font-size:22px;flex-shrink:0}
+.ab-info{flex:1}
+.ab-title{font-size:13px;font-weight:800;color:var(--text)}
+.ab-sub{font-size:11px;font-weight:600;color:var(--muted);margin-top:1px}
+.ab-toggle{width:44px;height:26px;border-radius:13px;background:#CBD5E1;transition:background .25s;flex-shrink:0;position:relative}
+.ab-toggle.on{background:var(--green)}
+.ab-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:transform .25s}
+.ab-thumb.on{transform:translateX(18px)}
+
 @keyframes float-pill{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-13px)}}
 @keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(10px)}}
 @keyframes hint-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
@@ -272,6 +285,18 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text)}
     </div>
     <!-- Chips de pastillas -->
     <div class="pills-scroll" id="pills-scroll"></div>
+  </div>
+
+  <!-- Banner alarma -->
+  <div class="alarm-banner off" id="alarm-banner" onclick="toggleMainAlarm()">
+    <div class="ab-icon" id="ab-icon">🔔</div>
+    <div class="ab-info">
+      <div class="ab-title" id="ab-title">Activar alarma diaria</div>
+      <div class="ab-sub" id="ab-sub">Tocá para recibir recordatorio</div>
+    </div>
+    <div class="ab-toggle" id="ab-toggle">
+      <div class="ab-thumb" id="ab-thumb"></div>
+    </div>
   </div>
 
   <div class="stats-row">
@@ -529,7 +554,7 @@ function selectPill(id){
   activePillId = id;
   renderPillChips();
   updateStats();
-  // Re-init juegos
+  updateAlarmBanner();
   const pill = getActivePill();
   if(pill){
     document.getElementById('pill-el').textContent = pill.icon;
@@ -945,12 +970,148 @@ function closeDelModal(e){ if(e.target===document.getElementById('del-modal-bg')
 function closeDelModalDirect(){ document.getElementById('del-modal-bg').className='modal-bg hidden'; }
 
 // ===== ALARMAS =====
+function updateAlarmBanner(){
+  const pill = getActivePill();
+  if(!pill){ return; }
+  const on = pill.alarmEnabled || false;
+  const banner = document.getElementById('alarm-banner');
+  const toggle = document.getElementById('ab-toggle');
+  const thumb  = document.getElementById('ab-thumb');
+  const title  = document.getElementById('ab-title');
+  const sub    = document.getElementById('ab-sub');
+  const icon   = document.getElementById('ab-icon');
+  if(!banner) return;
+  if(on){
+    banner.className='alarm-banner on';
+    toggle.className='ab-toggle on'; thumb.className='ab-thumb on';
+    icon.textContent='🔔';
+    title.textContent='Alarma activa — ' + (pill.name||'Pastilla');
+    sub.textContent='Suena todos los días a las ' + (pill.time||'');
+  } else {
+    banner.className='alarm-banner off';
+    toggle.className='ab-toggle'; thumb.className='ab-thumb';
+    icon.textContent='🔕';
+    title.textContent='Activar alarma diaria';
+    sub.textContent='Tocá para recibir recordatorio a las ' + (pill.time||'');
+  }
+}
+
+async function toggleMainAlarm(){
+  const pill = getActivePill();
+  if(!pill){ showToast('Primero agregá una pastilla'); return; }
+
+  if(window.AndroidBridge){
+    if(pill.alarmEnabled){
+      // Desactivar
+      pill.alarmEnabled = false;
+      try{ window.AndroidBridge.cancelAlarm(); }catch(e){}
+      saveAll(); updateAlarmBanner(); renderPillsList();
+      showToast('🔕 Alarma desactivada');
+      return;
+    }
+
+    // Activar — primero verificar permiso de notificaciones
+    const hasNotif = window.AndroidBridge.hasNotifPermission();
+    if(!hasNotif){
+      window.AndroidBridge.requestNotifPermission();
+      showToast('⚠️ Aceptá el permiso de notificaciones y volvé a tocar');
+      return;
+    }
+
+    // Verificar permiso de alarma exacta (Android 12+)
+    let canExact = true;
+    try{ canExact = window.AndroidBridge.canScheduleExactAlarms(); }catch(e){}
+    if(!canExact){
+      showAlarmPermDialog(pill);
+      return;
+    }
+
+    // Todo OK — activar alarma
+    pill.alarmEnabled = true;
+    try{
+      window.AndroidBridge.setAlarm(pill.time, pill.name, pill.notes||'');
+      // Notif de prueba para confirmar que funciona
+      setTimeout(()=>{
+        try{ window.AndroidBridge.testNotification(pill.name, pill.notes||''); }catch(e){}
+      }, 1000);
+    }catch(e){}
+    saveAll(); updateAlarmBanner(); renderPillsList();
+    showToast('🔔 ¡Alarma activada! Sonará a las ' + pill.time);
+    return;
+  }
+
+  // Web fallback
+  if(pill.alarmEnabled){
+    pill.alarmEnabled = false;
+    saveAll(); updateAlarmBanner();
+    showToast('🔕 Alarma desactivada');
+    return;
+  }
+  if(!('Notification' in window)){ showToast('Tu navegador no soporta notificaciones'); return; }
+  if(Notification.permission === 'denied'){ showToast('Permiso bloqueado en ajustes del navegador'); return; }
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    pill.alarmEnabled = true;
+    saveAll(); updateAlarmBanner();
+    showToast('🔔 ¡Alarma activada! Sonará a las ' + pill.time);
+    new Notification('🔔 PastillaTrack', {body:'Alarma activada para ' + pill.name + ' a las ' + pill.time});
+  } else {
+    showToast('Permiso denegado por el sistema');
+  }
+}
+
+function showAlarmPermDialog(pill){
+  // Mostrar modal explicando que hay que habilitar alarmas exactas
+  let dlg = document.getElementById('alarm-perm-dlg');
+  if(!dlg){
+    dlg = document.createElement('div');
+    dlg.id = 'alarm-perm-dlg';
+    dlg.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:flex-end;justify-content:center';
+    dlg.innerHTML = `
+      <div style="background:#fff;border-radius:24px 24px 0 0;padding:1.5rem;width:100%;max-width:430px">
+        <div style="font-size:36px;text-align:center;margin-bottom:.75rem">⏰</div>
+        <div style="font-size:17px;font-weight:900;color:#1a1d2e;text-align:center;margin-bottom:.5rem">Permiso de alarma exacta</div>
+        <div style="font-size:13px;color:#8892A4;font-weight:600;text-align:center;margin-bottom:1.5rem;line-height:1.6">
+          Android requiere que habilites las <b>alarmas exactas</b> para que PastillaTrack pueda avisarte exactamente a la hora.<br><br>
+          Tocá <b>"Permitir"</b> en la pantalla que se va a abrir.
+        </div>
+        <button onclick="goToAlarmSettings()" style="width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#2DD4A0;color:#fff;margin-bottom:8px;cursor:pointer">
+          Ir a configurar permiso →
+        </button>
+        <button onclick="document.getElementById('alarm-perm-dlg').remove()" style="width:100%;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;background:transparent;color:#8892A4;cursor:pointer">
+          Cancelar
+        </button>
+      </div>`;
+    document.body.appendChild(dlg);
+  } else {
+    dlg.style.display = 'flex';
+  }
+}
+
+function goToAlarmSettings(){
+  document.getElementById('alarm-perm-dlg').remove();
+  try{ window.AndroidBridge.openAlarmPermissionSettings(); }catch(e){}
+}
+
+function showToast(msg){
+  let t = document.getElementById('main-toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id='main-toast';
+    t.style.cssText='position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1d2e;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:700;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;font-family:Nunito,sans-serif';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg; t.style.opacity='1';
+  setTimeout(()=>t.style.opacity='0', 2800);
+}
+
 function initAlarmState(){
   cfg.pills.forEach(p => {
     if(p.alarmEnabled && window.AndroidBridge){
       try{ window.AndroidBridge.setAlarm(p.time, p.name, p.notes||''); }catch(e){}
     }
   });
+  updateAlarmBanner();
 }
 
 // ===== BOOT =====

@@ -13,6 +13,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -57,31 +58,30 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void createNotificationChannel() {
+    public void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Uri soundUri = Uri.parse(
                 "android.resource://" + getPackageName() + "/raw/alarm_sound");
-
             AudioAttributes audioAttr = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_ALARM)
                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                 .build();
-
-            NotificationChannel ch = new NotificationChannel(
-                CHANNEL_ID,
-                "Alarma de Pastilla",
-                NotificationManager.IMPORTANCE_HIGH);
-            ch.setDescription("Recordatorio diario para tomar tu pastilla");
-            ch.enableVibration(true);
-            ch.setVibrationPattern(new long[]{0, 400, 200, 400, 200, 600});
-            ch.setSound(soundUri, audioAttr);
-            ch.setShowBadge(true);
-            ch.enableLights(true);
-            ch.setLightColor(0xFF2DD4A0);
-
+            // Eliminar canal viejo y recrear para asegurar el sonido
             NotificationManager nm = (NotificationManager)
                 getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) nm.createNotificationChannel(ch);
+            if (nm != null) {
+                nm.deleteNotificationChannel(CHANNEL_ID);
+                NotificationChannel ch = new NotificationChannel(
+                    CHANNEL_ID, "Alarma de Pastilla",
+                    NotificationManager.IMPORTANCE_HIGH);
+                ch.setDescription("Recordatorio diario");
+                ch.enableVibration(true);
+                ch.setVibrationPattern(new long[]{0,400,200,400,200,600});
+                ch.setSound(soundUri, audioAttr);
+                ch.setShowBadge(true);
+                ch.enableLights(true);
+                nm.createNotificationChannel(ch);
+            }
         }
     }
 
@@ -100,6 +100,25 @@ public class MainActivity extends Activity {
         public void requestNotifPermission() { askNotifPermission(); }
 
         @JavascriptInterface
+        public boolean canScheduleExactAlarms() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                return am != null && am.canScheduleExactAlarms();
+            }
+            return true;
+        }
+
+        @JavascriptInterface
+        public void openAlarmPermissionSettings() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        }
+
+        @JavascriptInterface
         public void setAlarm(String timeStr, String pillName, String notes) {
             try {
                 String[] p = timeStr.split(":");
@@ -114,7 +133,7 @@ public class MainActivity extends Activity {
                 ed.putBoolean("alarm_enabled", true);
                 ed.apply();
 
-                scheduleAlarm(hour, min, pillName, notes);
+                scheduleAlarm(hour, min, pillName, notes, 0);
             } catch (Exception e) { e.printStackTrace(); }
         }
 
@@ -122,7 +141,7 @@ public class MainActivity extends Activity {
         public void cancelAlarm() {
             try {
                 AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                PendingIntent pi = buildAlarmIntent("", "");
+                PendingIntent pi = buildPI(0, "", "");
                 if (am != null) am.cancel(pi);
                 getSharedPreferences(PREFS, MODE_PRIVATE).edit()
                     .putBoolean("alarm_enabled", false).apply();
@@ -160,32 +179,47 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void scheduleAlarm(int hour, int min, String pillName, String notes) {
+    public void scheduleAlarm(int hour, int min, String pillName,
+                               String notes, int requestCode) {
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
-
-        PendingIntent pi = buildAlarmIntent(pillName, notes);
 
         java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.set(java.util.Calendar.HOUR_OF_DAY, hour);
         cal.set(java.util.Calendar.MINUTE,      min);
         cal.set(java.util.Calendar.SECOND,      0);
         cal.set(java.util.Calendar.MILLISECOND, 0);
+        // Si la hora ya pasó hoy, programar para mañana
         if (cal.getTimeInMillis() <= System.currentTimeMillis()) {
             cal.add(java.util.Calendar.DAY_OF_YEAR, 1);
         }
 
-        // setAlarmClock es el más confiable para alarmas exactas en Android moderno
-        AlarmManager.AlarmClockInfo info =
-            new AlarmManager.AlarmClockInfo(cal.getTimeInMillis(), pi);
-        am.setAlarmClock(info, pi);
+        PendingIntent pi = buildPI(requestCode, pillName, notes);
+
+        // Android 12+ requiere permiso especial para alarmas exactas
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (am.canScheduleExactAlarms()) {
+                AlarmManager.AlarmClockInfo info =
+                    new AlarmManager.AlarmClockInfo(cal.getTimeInMillis(), pi);
+                am.setAlarmClock(info, pi);
+            } else {
+                // Fallback: alarma inexacta (puede tener demora de minutos)
+                am.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            am.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
+        } else {
+            am.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
+        }
     }
 
-    private PendingIntent buildAlarmIntent(String pillName, String notes) {
+    private PendingIntent buildPI(int code, String pillName, String notes) {
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.putExtra("pill_name", pillName);
         intent.putExtra("notes",     notes);
-        return PendingIntent.getBroadcast(this, 0, intent,
+        return PendingIntent.getBroadcast(this, code, intent,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
@@ -198,8 +232,8 @@ public class MainActivity extends Activity {
 
             String title = "\uD83D\uDC8A \u00a1Hora de " + pillName + "!";
             String body  = (notes != null && !notes.isEmpty())
-                ? notes + " — Tocá para registrarla"
-                : "No te olvides de tomar tu pastilla \u2014 Tocá para abrir la app";
+                ? notes + " \u2014 Toc\u00e1 para registrarla"
+                : "No te olvides de tomar tu pastilla";
 
             androidx.core.app.NotificationCompat.Builder b =
                 new androidx.core.app.NotificationCompat.Builder(this, CHANNEL_ID)
@@ -212,9 +246,8 @@ public class MainActivity extends Activity {
                     .setCategory(androidx.core.app.NotificationCompat.CATEGORY_ALARM)
                     .setContentIntent(pi)
                     .setAutoCancel(true)
-                    .setVibrate(new long[]{0, 400, 200, 400, 200, 600});
+                    .setVibrate(new long[]{0,400,200,400,200,600});
 
-            // Sonido en Android < 8
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 Uri soundUri = Uri.parse(
                     "android.resource://" + getPackageName() + "/raw/alarm_sound");
